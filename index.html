@@ -46,34 +46,10 @@
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
 
     <!-- 畫面 1：設定區 -->
-    <div id="setup-screen" class="bg-white rounded-3xl shadow-xl p-8 max-w-2xl w-full border-4 border-green-400 relative z-10">
-        
-        <!-- API Key 置頂輸入區 -->
-        <div class="mb-6 flex justify-end w-full">
-            <div class="flex items-center gap-2 bg-gray-100 p-2 rounded-xl border-2 border-gray-200 shadow-sm">
-                <label for="api-key-input" class="text-sm font-bold text-gray-700">🔑 設定 API Key：</label>
-                <input type="password" id="api-key-input" placeholder="貼上您的金鑰..." class="p-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-green-500 w-32 focus:w-48 transition-all bg-white">
-                <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-xs text-blue-600 hover:text-blue-800 underline font-bold bg-blue-50 px-2 py-1 rounded">申請</a>
-            </div>
-        </div>
-
-        <h1 class="text-3xl font-bold text-center text-green-600 mb-2 mt-2 md:mt-0">✨ 單字尋寶設定 ✨</h1>
+    <div id="setup-screen" class="bg-white rounded-3xl shadow-xl p-8 max-w-2xl w-full border-4 border-green-400 relative z-10 mt-8">
+        <h1 class="text-3xl font-bold text-center text-green-600 mb-2">✨ 單字尋寶設定 ✨</h1>
         <p class="text-center text-gray-500 mb-6 text-lg">請輸入今天要練習的 8 個單字</p>
-
-        <!-- AI 出題區塊 (加回藍色外框) -->
-        <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-5 mb-8">
-            <h3 class="text-lg font-bold text-blue-700 mb-3 flex items-center gap-2">
-                <span>🤖</span> AI 幫我出題 (輸入主題，例如：動物、顏色)
-            </h3>
-            <div class="flex flex-col sm:flex-row gap-3">
-                <input type="text" id="ai-theme-input" placeholder="請輸入主題..." class="flex-1 p-3 rounded-xl border border-blue-300 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors">
-                <button type="button" id="ai-generate-btn" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-md hover:shadow-lg whitespace-nowrap">
-                    ✨ 產生單字
-                </button>
-            </div>
-            <p id="ai-status-msg" class="hidden text-sm font-bold mt-3 text-center"></p>
-        </div>
-
+        
         <form id="word-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input type="text" required placeholder="單字 1 (例: apple)" class="word-input text-xl p-3 border-2 border-green-200 rounded-xl focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors">
             <input type="text" required placeholder="單字 2 (例: banana)" class="word-input text-xl p-3 border-2 border-green-200 rounded-xl focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors">
@@ -84,9 +60,15 @@
             <input type="text" required placeholder="單字 7 (例: giraffe)" class="word-input text-xl p-3 border-2 border-green-200 rounded-xl focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors">
             <input type="text" required placeholder="單字 8 (例: horse)" class="word-input text-xl p-3 border-2 border-green-200 rounded-xl focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-colors">
             
-            <button type="submit" class="col-span-1 md:col-span-2 mt-4 bg-green-500 hover:bg-green-600 text-white text-2xl font-bold py-4 px-8 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
-                🚀 開始遊戲
-            </button>
+            <!-- 按鈕區塊：改為並排顯示 -->
+            <div class="col-span-1 md:col-span-2 mt-4 flex flex-col md:flex-row gap-4">
+                <button type="submit" class="flex-1 bg-green-500 hover:bg-green-600 text-white text-2xl font-bold py-4 px-8 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
+                    🚀 開始遊戲
+                </button>
+                <button type="button" id="clear-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 text-xl font-bold py-4 px-8 rounded-2xl shadow hover:shadow-md transition-all">
+                    🧹 清除單字
+                </button>
+            </div>
         </form>
     </div>
 
@@ -96,19 +78,9 @@
             <h2 class="text-2xl font-bold text-gray-700 bg-white px-6 py-2 rounded-full shadow-sm text-center">
                 🎯 任務：大聲唸出單字並找出隱藏的謎底！
             </h2>
-            <div class="flex gap-2">
-                <button id="ai-hint-btn" class="bg-purple-500 text-white hover:bg-purple-600 px-4 py-2 rounded-full shadow hover:shadow-md transition-all font-bold flex items-center gap-2">
-                    🤖 需要提示
-                </button>
-                <button id="restart-btn" class="bg-white text-gray-500 hover:text-green-600 px-4 py-2 rounded-full shadow hover:shadow-md transition-all font-bold">
-                    重新設定
-                </button>
-            </div>
-        </div>
-
-        <div id="hint-display-container" class="hidden mb-6 p-4 bg-purple-50 border-2 border-purple-200 rounded-2xl shadow-inner relative">
-            <button id="close-hint-btn" class="absolute top-2 right-2 text-purple-400 hover:text-purple-600 font-bold p-1 text-xl">✕</button>
-            <p id="hint-text" class="text-lg text-purple-800 font-bold text-center"></p>
+            <button id="restart-btn" class="bg-white text-gray-500 hover:text-green-600 px-4 py-2 rounded-full shadow hover:shadow-md transition-all font-bold">
+                回設定畫面
+            </button>
         </div>
 
         <!-- 獎盃顯示區 (預設隱藏) -->
@@ -141,56 +113,12 @@
         const winDisplay = document.getElementById('win-display');
         const mysteryWordDisplay = document.getElementById('mystery-word-display');
         const restartBtn = document.getElementById('restart-btn');
+        const clearBtn = document.getElementById('clear-btn');
 
-        // API Key 儲存與讀取邏輯
-        const apiKeyInput = document.getElementById('api-key-input');
-        const savedKey = localStorage.getItem('gemini_api_key');
-        if (savedKey) apiKeyInput.value = savedKey;
-        
-        // 修改：改用 input 事件即時儲存，並增加 Enter 鍵的視覺回饋
-        apiKeyInput.addEventListener('input', (e) => {
-            localStorage.setItem('gemini_api_key', e.target.value.trim());
-        });
-
-        apiKeyInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                apiKeyInput.blur(); // 移除游標焦點
-                showAiStatus('🔑 API Key 已自動儲存！現在您可以輸入主題產生單字了。', 'success');
-            }
-        });
-
-        // 檢查並取得 API Key 的輔助函數
-        function getApiKey() {
-            const key = apiKeyInput.value.trim();
-            if (!key) {
-                throw new Error("未輸入 API Key");
-            }
-            return key;
-        }
-
-        const aiThemeInput = document.getElementById('ai-theme-input');
-        const aiGenerateBtn = document.getElementById('ai-generate-btn');
-        const aiStatusMsg = document.getElementById('ai-status-msg');
-        
-        const aiHintBtn = document.getElementById('ai-hint-btn');
-        const hintDisplayContainer = document.getElementById('hint-display-container');
-        const hintText = document.getElementById('hint-text');
-        const closeHintBtn = document.getElementById('close-hint-btn');
-
-        aiGenerateBtn.addEventListener('click', generateWordsFromTheme);
-        
-        // 新增：讓主題輸入框也支援 Enter 鍵直接產生單字
-        aiThemeInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                generateWordsFromTheme();
-            }
-        });
-
-        aiHintBtn.addEventListener('click', getHint);
-        closeHintBtn.addEventListener('click', () => {
-            hintDisplayContainer.classList.add('hidden');
+        // 清除按鈕：清空所有單字
+        clearBtn.addEventListener('click', function() {
+            inputs.forEach(input => input.value = '');
+            inputs[0].focus(); // 將游標放在第一個輸入框
         });
 
         // 表單送出，開始遊戲
@@ -208,119 +136,11 @@
             if (words.length === 8) {
                 startGame();
             } else {
-                showAiStatus('請確認 8 個欄位都有輸入單字喔！', 'error');
+                alert('請確認 8 個欄位都有輸入單字喔！');
             }
         });
 
-        function showAiStatus(msg, type = 'info') {
-            aiStatusMsg.textContent = msg;
-            aiStatusMsg.classList.remove('hidden', 'text-blue-500', 'text-red-500', 'text-green-500');
-            if (type === 'error') aiStatusMsg.classList.add('text-red-500');
-            else if (type === 'success') aiStatusMsg.classList.add('text-green-500');
-            else aiStatusMsg.classList.add('text-blue-500');
-        }
-
-        async function generateWordsFromTheme() {
-            const theme = aiThemeInput.value.trim();
-            if(!theme) {
-                showAiStatus('請先輸入一個主題唷！', 'error');
-                return;
-            }
-
-            try {
-                const apiKey = getApiKey(); // 取得 API Key，若無會跳到 catch
-                
-                showAiStatus('🤖 AI 正在努力思考中...', 'info');
-                aiGenerateBtn.disabled = true;
-                aiGenerateBtn.classList.add('opacity-50', 'cursor-not-allowed');
-
-                const payload = {
-                    contents: [{ parts: [{ text: `Generate exactly 8 simple English vocabulary words suitable for elementary school students related to the theme: '${theme}'. Return ONLY a JSON array of 8 strings.` }] }],
-                    generationConfig: {
-                        responseMimeType: "application/json",
-                        responseSchema: {
-                            type: "ARRAY",
-                            items: { type: "STRING" }
-                        }
-                    }
-                };
-                // 使用支援的最新文字生成模型
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                const result = await response.json();
-                
-                if (result.candidates && result.candidates[0].content) {
-                    const jsonStr = result.candidates[0].content.parts[0].text;
-                    const generatedWords = JSON.parse(jsonStr);
-
-                    inputs.forEach((input, index) => {
-                        if(generatedWords[index]) input.value = generatedWords[index];
-                    });
-                    showAiStatus('✨ 單字產生完成！', 'success');
-                } else {
-                    throw new Error("API 沒有回傳有效的內容");
-                }
-            } catch(e) {
-                console.error(e);
-                if (e.message === "未輸入 API Key") {
-                    showAiStatus('⚠️ 請先在右上角輸入您的 API Key 喔！', 'error');
-                } else {
-                    showAiStatus('🤖 哎呀，API Key 可能無效或連線失敗，請檢查設定。', 'error');
-                }
-            } finally {
-                aiGenerateBtn.disabled = false;
-                aiGenerateBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            }
-        }
-
-        async function getHint() {
-            try {
-                const apiKey = getApiKey(); // 檢查 API Key
-                
-                hintDisplayContainer.classList.remove('hidden');
-                hintText.textContent = "🤖 AI 正在想一個有趣的提示...";
-                aiHintBtn.disabled = true;
-                aiHintBtn.classList.add('opacity-50', 'cursor-not-allowed');
-
-                const payload = {
-                    contents: [{ parts: [{ text: `The secret English word is '${mysteryWord}'. Give a short, fun hint in Traditional Chinese for a primary school student to guess this word. Do NOT include the word '${mysteryWord}' or its direct translation in the response. Keep it under 2 sentences. Use emojis.` }] }]
-                };
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                const result = await response.json();
-                if (result.candidates && result.candidates[0].content) {
-                    const text = result.candidates[0].content.parts[0].text;
-                    hintText.textContent = `💡 提示：${text}`;
-                } else {
-                    throw new Error("Invalid response");
-                }
-            } catch(e) {
-                console.error(e);
-                hintDisplayContainer.classList.remove('hidden');
-                if (e.message === "未輸入 API Key") {
-                    hintText.textContent = "⚠️ 請先重新整理網頁，並在設定畫面輸入您的 API Key 喔！";
-                } else {
-                    hintText.textContent = "🤖 哎呀，AI 提示短路了，請確認 API Key 是否正確。";
-                }
-            } finally {
-                aiHintBtn.disabled = false;
-                aiHintBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            }
-        }
-
-        // 重新設定按鈕
+        // 返回設定畫面按鈕
         restartBtn.addEventListener('click', resetGame);
 
         function startGame() {
@@ -354,7 +174,7 @@
             gameScreen.classList.remove('hidden');
         }
 
-        async function handleWordClick(cardElement, clickedWord) {
+        function handleWordClick(cardElement, clickedWord) {
             // 防止重複點擊
             if (cardElement.classList.contains('pointer-events-none')) return;
             cardElement.classList.add('pointer-events-none');
@@ -362,9 +182,6 @@
             // 給予點擊的視覺回饋（變色、縮小）
             cardElement.classList.remove('hover:bg-green-50');
             cardElement.classList.add('bg-green-100', 'scale-95');
-
-            // 等待 AI 唸出單字發音
-            await playWordAudio(clickedWord);
 
             if (clickedWord === mysteryWord) {
                 // 點中謎底，觸發勝利！
@@ -377,111 +194,6 @@
                 setTimeout(() => {
                     cardElement.style.display = 'none';
                 }, 300);
-            }
-        }
-
-        // 呼叫 Gemini TTS API 播放發音
-        async function playWordAudio(word) {
-            try {
-                const apiKey = getApiKey(); // 檢查 API Key
-                
-                const payload = {
-                    contents: [{
-                        parts: [{ text: `Say cheerfully: ${word}` }]
-                    }],
-                    generationConfig: {
-                        responseModalities: ["AUDIO"],
-                        speechConfig: {
-                            voiceConfig: {
-                                prebuiltVoiceConfig: { voiceName: "Aoede" } // 選擇清晰、有活力的女聲
-                            }
-                        }
-                    },
-                    model: "gemini-2.5-flash-preview-tts"
-                };
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-                const part = result?.candidates?.[0]?.content?.parts?.[0];
-                const audioData = part?.inlineData?.data;
-                const mimeType = part?.inlineData?.mimeType;
-
-                if (audioData && mimeType && mimeType.startsWith("audio/")) {
-                    let sampleRate = 24000;
-                    const rateMatch = mimeType.match(/rate=(\d+)/);
-                    if (rateMatch) {
-                        sampleRate = parseInt(rateMatch[1], 10);
-                    }
-
-                    const pcmData = base64ToArrayBuffer(audioData);
-                    const pcm16 = new Int16Array(pcmData);
-                    const wavBlob = pcmToWav(pcm16, sampleRate);
-                    const audioUrl = URL.createObjectURL(wavBlob);
-
-                    // 建立 Audio 物件並播放
-                    const audio = new Audio(audioUrl);
-                    await new Promise(resolve => {
-                        audio.onended = resolve; // 播放完畢後繼續遊戲邏輯
-                        audio.onerror = resolve; // 發生錯誤也繼續，不卡死畫面
-                        audio.play().catch(resolve);
-                    });
-                }
-            } catch (e) {
-                console.error("語音播放失敗:", e);
-            }
-        }
-
-        // 音訊格式轉換工具函數 (將 PCM 轉為瀏覽器可播放的 WAV)
-        function base64ToArrayBuffer(base64) {
-            const binaryString = window.atob(base64);
-            const len = binaryString.length;
-            const bytes = new Uint8Array(len);
-            for (let i = 0; i < len; i++) {
-                bytes[i] = binaryString.charCodeAt(i);
-            }
-            return bytes.buffer;
-        }
-
-        function pcmToWav(pcmData, sampleRate) {
-            const numChannels = 1;
-            const bitsPerSample = 16;
-            const byteRate = sampleRate * numChannels * (bitsPerSample / 8);
-            const blockAlign = numChannels * (bitsPerSample / 8);
-            const dataSize = pcmData.length * (bitsPerSample / 8);
-            const buffer = new ArrayBuffer(44 + dataSize);
-            const view = new DataView(buffer);
-
-            writeString(view, 0, 'RIFF');
-            view.setUint32(4, 36 + dataSize, true);
-            writeString(view, 8, 'WAVE');
-            writeString(view, 12, 'fmt ');
-            view.setUint32(16, 16, true);
-            view.setUint16(20, 1, true);
-            view.setUint16(22, numChannels, true);
-            view.setUint32(24, sampleRate, true);
-            view.setUint32(28, byteRate, true);
-            view.setUint16(32, blockAlign, true);
-            view.setUint16(34, bitsPerSample, true);
-            writeString(view, 36, 'data');
-            view.setUint32(40, dataSize, true);
-
-            let offset = 44;
-            for (let i = 0; i < pcmData.length; i++, offset += 2) {
-                view.setInt16(offset, pcmData[i], true);
-            }
-
-            return new Blob([view], { type: 'audio/wav' });
-        }
-
-        function writeString(view, offset, string) {
-            for (let i = 0; i < string.length; i++) {
-                view.setUint8(offset + i, string.charCodeAt(i));
             }
         }
 
@@ -518,16 +230,8 @@
             gameScreen.classList.add('hidden');
             winDisplay.classList.add('hidden');
             
-            hintDisplayContainer.classList.add('hidden');
-            if(aiStatusMsg) aiStatusMsg.classList.add('hidden');
-            if(aiThemeInput) aiThemeInput.value = '';
-            
-            // 顯示設定區
+            // 顯示設定區，此時不再清空輸入框，保留上次的單字
             setupScreen.classList.remove('hidden');
-            
-            // 清空表單
-            inputs.forEach(input => input.value = '');
-            inputs[0].focus(); // 將游標放在第一個輸入框
         }
     </script>
 </body>
